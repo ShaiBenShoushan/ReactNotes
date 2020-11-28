@@ -148,7 +148,7 @@ render() {
       </form>
       <div>
       <ul>{this.notes.map((note) =>
-        <div>
+        <div key={note.id}>
           <div onClick={() => this.setModalIsOpen()}>
             <div onClick={(event) => this.setNotes(event)}>
             {/* <this.ListItem */}
