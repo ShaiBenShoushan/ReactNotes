@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import './notes.css'
-import Note from './NewNote.js'
+// import Note from './NewNote.js'
 import NewNote from './NewNote.js';
 
 class SearchForm extends React.Component {
@@ -31,8 +31,8 @@ onClick(event){
   let confirmer = confirm("Are you sure you want to delete this note?");
   if(confirmer){
     const newList = this.notes.filter((item) => {
-      console.log(item.id, event.target.id);
-      return item.id != event.target.id});
+      console.log(item.id, parseInt(event.target.id),'nigga');
+      return item.id !== parseInt(event.target.id)});
     this.setState({notes: newList});
     this.notes = newList;
   } else {
@@ -50,11 +50,11 @@ setModalIsOpen(){
 onSubmit(event) {
     const date = new Date().toLocaleString();
     event.preventDefault();
-    const id = this.state.id++;
+    // const id = this.state.id++;
     const note = {
       header: this.state.headerValue,
       body: this.state.inputValue,
-      id: id,
+      id: this.state.id,
       date: date,
       // key: date + Math.random(),
 
@@ -62,6 +62,7 @@ onSubmit(event) {
     this.notes.unshift(note);
     this.setState((state) => {
       return {
+        id: state.id + 1,
         inputValue: '',
         headerValue: '',
         notes: [note, ...state.notes]
@@ -80,9 +81,14 @@ onSubmit(event) {
 // }
 
 setNotes(event){
+  console.log(this.notes,event.target.id);
   let editedNote = this.notes.find(item => {
-    return event.target.id == item.id;
+    // let x = event.target.id.toString();
+    // console.log(parseInt(event.target.id),'hello');
+    // console.log(item.id, 'hi');
+    return parseInt(event.target.id) === item.id;
   });
+  console.log(editedNote);
   this.setState({
     currentNote: editedNote
   });
@@ -92,8 +98,8 @@ setNoteChanges(event){
   let newDate = new Date().toLocaleString();
   this.setModalIsOpen();
   const newList = this.notes.filter((item) => {
-    // console.log(item.id, event.target.id);
-    return item.id != event.target.id});
+    console.log(item.id, event.target.id,'nigga');
+    return item.id !== parseInt(event.target.id)});
     this.setState(state => {
       return state.currentNote.date = newDate;
     });
@@ -148,9 +154,9 @@ render() {
       </form>
       <div>
       <ul>{this.notes.map((note) =>
-        <div key={note.id}>
-          <div onClick={() => this.setModalIsOpen()}>
-            <div onClick={(event) => this.setNotes(event)}>
+        <div id={note.id} key={note.id}>
+          <div onClick={() => this.setModalIsOpen()} id={note.id} key={note.id}>
+            <div onClick={(event) => this.setNotes(event)} id={note.id} key={note.id}>
             {/* <this.ListItem */}
             <NewNote
               key={note.id}
