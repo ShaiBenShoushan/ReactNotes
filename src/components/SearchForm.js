@@ -1,7 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
 import './notes.css'
-// import Note from './NewNote.js'
 import NewNote from './NewNote.js';
 
 class SearchForm extends React.Component {
@@ -10,33 +9,27 @@ class SearchForm extends React.Component {
     this.state = {
       inputValue: '',
       headerValue: '',
-      // list: [],
       id: 0,
       modalIsOpen: false,
       notes: [],
       currentNote: {
-          header: '',
-          body: '',
-          id: 0,
-          date: '',
-          key: '',
+        header: '',
+        body: '',
+        id: 0,
+        date: '',
       }
     };
-    this.notes = [];
   }
 
-onClick(event){
-  console.log(this.notes,'nigga');
+onRemove(event){
   //eslint-disable-next-line no-restricted-globals
   let confirmer = confirm("Are you sure you want to delete this note?");
   if(confirmer){
-    const newList = this.notes.filter((item) => {
-      console.log(item.id, parseInt(event.target.id),'nigga');
+    const newList = this.state.notes.filter((item) => {
       return item.id !== parseInt(event.target.id)});
+    const itemToRemove = this.state.notes.find((item) => {
+      return item.id === parseInt(event.target.id)});
     this.setState({notes: newList});
-    this.notes = newList;
-  } else {
-
   }
 }
 
@@ -48,47 +41,29 @@ setModalIsOpen(){
 }
 
 onSubmit(event) {
-    const date = new Date().toLocaleString();
-    event.preventDefault();
-    // const id = this.state.id++;
-    const note = {
-      header: this.state.headerValue,
-      body: this.state.inputValue,
-      id: this.state.id,
-      date: date,
-      // key: date + Math.random(),
-
-    };
-    this.notes.unshift(note);
-    this.setState((state) => {
-      return {
-        id: state.id + 1,
-        inputValue: '',
-        headerValue: '',
-        notes: [note, ...state.notes]
-      }
-  })
+  const date = new Date().toLocaleString();
+  event.preventDefault();
+  const note = {
+    header: this.state.headerValue,
+    body: this.state.inputValue,
+    id: this.state.id,
+    date: date,
+  };
+  this.setState((state) => {
+    return {
+      id: state.id + 1,
+      inputValue: '',
+      headerValue: '',
+      notes: [note, ...state.notes]
+    }
+  });
 }
 
-// ListItem(props){
-//   return (
-//     <li key={props.id} id={props.id}>
-//       <h4 id={props.id}>{props.date}</h4>
-//       <h1 id={props.id}>{props.header}</h1>
-//       <p id={props.id}>{props.body}</p>
-//     </li>
-//   )
-// }
 
 setNotes(event){
-  console.log(this.notes,event.target.id);
-  let editedNote = this.notes.find(item => {
-    // let x = event.target.id.toString();
-    // console.log(parseInt(event.target.id),'hello');
-    // console.log(item.id, 'hi');
+  let editedNote = this.state.notes.find(item => {
     return parseInt(event.target.id) === item.id;
   });
-  console.log(editedNote);
   this.setState({
     currentNote: editedNote
   });
@@ -97,13 +72,15 @@ setNotes(event){
 setNoteChanges(event){
   let newDate = new Date().toLocaleString();
   this.setModalIsOpen();
-  const newList = this.notes.filter((item) => {
-    console.log(item.id, event.target.id,'nigga');
+  const newList = this.state.notes.filter((item) => {
     return item.id !== parseInt(event.target.id)});
     this.setState(state => {
       return state.currentNote.date = newDate;
     });
-  this.notes = [this.state.currentNote, ...newList]
+    this.setState({
+      notes: [this.state.currentNote, ...newList]
+    }
+  );
 }
 
 onChange(event) {
@@ -147,17 +124,17 @@ render() {
           name="noteText"
           id="noteText"
           type="text"
+          required
           value={this.state.inputValue}
           onChange={(event) => this.onChange(event)}
         />
         <input type="submit" value="submit"/>
       </form>
-      <div>
-      <ul>{this.notes.map((note) =>
-        <div id={note.id} key={note.id}>
-          <div onClick={() => this.setModalIsOpen()} id={note.id} key={note.id}>
+      <div className="note-wrap">
+      <ul>{this.state.notes.map((note) =>
+        <li id={note.id} key={note.id}>
+          <div className="button-wrap" onClick={() => this.setModalIsOpen()} id={note.id} key={note.id}>
             <div onClick={(event) => this.setNotes(event)} id={note.id} key={note.id}>
-            {/* <this.ListItem */}
             <NewNote
               key={note.id}
               id={note.id}
@@ -165,10 +142,11 @@ render() {
               body={note.body}
               date={note.date}>
             </NewNote>
-            {/* </this.ListItem> */}
             </div>
           </div>
-            <button id={note.id} onClick={(event) => this.onClick(event)}>Remove</button>
+            <div className="remove-div">
+              <button id={note.id} onClick={(event) => this.onRemove(event)}>Remove</button>
+            </div>
           <Modal
             isOpen={this.state.modalIsOpen}
             onRequestClose={() => this.setModalIsOpen()}
@@ -204,7 +182,7 @@ render() {
               </div>
             </div>
           </Modal>
-        </div>
+        </li>
         )}
       </ul>
       </div>
