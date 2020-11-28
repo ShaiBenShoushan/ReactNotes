@@ -27,8 +27,6 @@ onRemove(event){
   if(confirmer){
     const newList = this.state.notes.filter((item) => {
       return item.id !== parseInt(event.target.id)});
-    const itemToRemove = this.state.notes.find((item) => {
-      return item.id === parseInt(event.target.id)});
     this.setState({notes: newList});
   }
 }
